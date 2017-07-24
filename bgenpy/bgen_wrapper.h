@@ -19,6 +19,8 @@ public:
   ~BGENReader();
   void load_samples();
   void seek_first_variant();
+  void seek_to_variant(size_t offset);
+  size_t offset();
   bool read_full_variant();
   bool read_minimal_variant();
 

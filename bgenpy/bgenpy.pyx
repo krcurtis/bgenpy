@@ -22,6 +22,8 @@ cdef extern from "bgen_wrapper.h":
         BGENReader(cpp_string&) except +
         void load_samples()
         void seek_first_variant()
+        void seek_to_variant(size_t)
+        size_t offset()
         bool read_full_variant() except +
         bool read_minimal_variant() except +
         Context m_context
@@ -63,8 +65,11 @@ cdef class Reader:
         return self.reader.m_sample_ids
         pass
 
-    def seek_first(self):
+    def seek_first_variant(self):
         self.reader.seek_first_variant()
+
+    def seek_to_variant_offset(self, offset):
+        self.reader.seek_to_variant(offset)
 
 
     def read_full_variant(self):
@@ -87,6 +92,9 @@ cdef class Reader:
                 self.reader.m_chromosome, 
                 self.reader.m_position, 
                 self.reader.m_alleles)
+
+    def offset(self):
+        return self.reader.offset()
 
     def __iter__(self):
         self.reader.seek_first_variant();

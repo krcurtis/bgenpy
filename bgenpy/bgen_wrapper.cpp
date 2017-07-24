@@ -69,6 +69,16 @@ void BGENReader::seek_first_variant()
   m_stream->seekg(m_offset + 4);  // why + 4?
 }
 
+void BGENReader::seek_to_variant(size_t offset)
+{
+  m_stream->seekg(offset);
+}
+
+size_t BGENReader::offset()
+{
+  return static_cast<size_t>(m_stream->tellg());
+}
+
 bool BGENReader::read_full_variant()
 {
   //printf("Here %s\n", __FUNCTION__);

@@ -99,7 +99,7 @@ class TestBGEN(unittest.TestCase):
 
         example = []
         with timeit('load from BGEN'):
-            B.seek_first()
+            B.seek_first_variant()
             try:
                 while True:
                     info = B.read_full_variant()
@@ -197,7 +197,7 @@ class TestBGEN(unittest.TestCase):
 
         example = []
         with timeit('load minimal variants from BGEN'):
-            B.seek_first()
+            B.seek_first_variant()
             try:
                 while True:
                     info = B.read_minimal_variant()
@@ -205,3 +205,44 @@ class TestBGEN(unittest.TestCase):
             except StopIteration:
                 pass
         self.assertTrue(len(example) == expected_variants)
+        del B
+
+
+    def test_bgen4(self):
+        """Test reading offsets and seeking to them"""
+        # this bgen file does not have sample names
+        B = bgen.Reader("test_files/test_data1.bgen")
+
+        attributes =  B.attributes()
+        expected_variants = attributes['number_of_variants']
+
+        snp_info = {}
+        example = []
+        with timeit('load offsets and variant info from BGEN'):
+            B.seek_first_variant()
+            try:
+                while True:
+                    offset = B.offset()
+                    info = B.read_minimal_variant()
+                    example.append(info)
+                    snp_info[offset] =  info
+            except StopIteration:
+                pass
+
+        # print(snp_info)
+
+        B2 = bgen.Reader("test_files/test_data1.bgen")
+        with timeit('jump to random variants and load info from BGEN'):
+            offsets = np.array(list(snp_info), dtype='int64')
+            # print(offsets)
+            randomized_offsets = np.random.choice(offsets, size=len(offsets), replace=False)
+            for offset in randomized_offsets:
+                # print('checking ', offset)
+                B2.seek_to_variant_offset(offset)
+                info = B2.read_minimal_variant()
+                self.assertTrue(info == snp_info[offset])
+                    
+        del B2
+        del B
+
+
