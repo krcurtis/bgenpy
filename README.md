@@ -3,7 +3,7 @@ Python module to read/write BGEN files
 
 
 
-At the most simplist, can extract full variant data with
+At the most simplest, one can extract full variant data with
 ```python
 import bgenpy
 bgen = bgenpy.Reader("my.bgen")
